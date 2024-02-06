@@ -21,13 +21,15 @@ android {
         val properties = Properties()
         properties.load(project.rootProject.file("gradle.properties").inputStream())
         buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
+        buildConfigField("String", "BASE_URL", "\"${properties.getProperty("BASE_URL")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -73,7 +75,7 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
 
-    //Gson
+    //Gson - SerializedName
     implementation("com.google.code.gson:gson:2.10.1")
 
     //Retrofit
@@ -109,5 +111,9 @@ dependencies {
     androidTestImplementation("com.google.truth:truth:1.0.1")
         //Mockito Framework
     testImplementation("org.mockito:mockito-core:2.25.0")
+        //MockWebServer
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+        //Okhttp (to avoid test error)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
 }
