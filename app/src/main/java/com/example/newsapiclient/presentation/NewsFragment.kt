@@ -51,19 +51,21 @@ class NewsFragment : Fragment() {
 
         newsAdapter = (activity as MainActivity).newsAdapter
 
-        newsAdapter.setOnItemClickListener {
-            val bundle = Bundle().apply {
-                putSerializable("selected_article", it)
-            }
-            findNavController().navigate(
-                R.id.action_newsFragment_to_infoFragment,
-                bundle
-            )
-
-        }
-
         initRecyclerView()
         viewNewsList()
+
+        newsAdapter.setOnItemClickListener {
+
+            Toast.makeText(context,"Item Clicked Successful!!!", Toast.LENGTH_SHORT).show()
+
+//            val bundle = Bundle().apply {
+//                putSerializable("selected_article", it)
+//            }
+//            findNavController().navigate(
+//                R.id.action_newsFragment_to_infoFragment,
+//                bundle
+//            )
+        }
     }
 
     private fun viewNewsList() {

@@ -25,17 +25,17 @@ class InfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentInfoBinding.bind(view)
-
-        val args : InfoFragmentArgs by navArgs()
-        val article = args.selectedArticle
-        
-        binding.wbInfo.apply {
-            webViewClient = WebViewClient()
-            if (article.url!=""){
-                loadUrl(article.url)
-            }
-        }
+//        binding = FragmentInfoBinding.bind(view)
+//
+//        val args : InfoFragmentArgs by navArgs()
+//        val article = args.selectedArticle
+//
+//        binding.wbInfo.apply {
+//            webViewClient = WebViewClient()
+//            if (article.url!=""){
+//                loadUrl(article.url)
+//            }
+//        }
 
     }
 }

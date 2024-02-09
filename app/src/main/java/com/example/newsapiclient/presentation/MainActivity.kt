@@ -10,6 +10,7 @@ import com.example.newsapiclient.databinding.ActivityMainBinding
 import com.example.newsapiclient.presentation.adapter.NewsAdapter
 import com.example.newsapiclient.presentation.viewmodel.NewsViewModel
 import com.example.newsapiclient.presentation.viewmodel.NewsViewModelFactory
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private lateinit var bottomNavigationView: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -34,38 +37,29 @@ class MainActivity : AppCompatActivity() {
         // Setting ViewModel
         viewModel = ViewModelProvider(this, factory)[NewsViewModel::class.java]
 
-        // Setting the start nav fragment
+        // Bottom Nav Config
+        bottomNavigationView = binding.bnvNews
+        bottomNavigationView.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.newsFragment -> {
+                    replaceFragment(NewsFragment())
+                    true
+                }
+
+                R.id.savedFragment -> {
+                    replaceFragment(SavedFragment())
+                    true
+                }
+
+                else -> false
+            }
+        }
         replaceFragment(NewsFragment())
 
-        // Restore the last selected fragment
-        viewModel.selectedFragmentId.takeIf { it != -1 }?.let { selectedFragmentId ->
-            binding.bnvNews.selectedItemId = selectedFragmentId
-            navigateToFragment(selectedFragmentId)
-        }
-
-        // Bottom Navigation Bar Configuration
-        binding.bnvNews.setOnItemSelectedListener {
-            navigateToFragment(it.itemId)
-            true
-        }
-
-    }
-
-    private fun navigateToFragment(itemId: Int) {
-        viewModel.selectedFragmentId = itemId
-        when (itemId) {
-            R.id.newsFragment -> replaceFragment(NewsFragment())
-            R.id.savedFragment -> replaceFragment(SavedFragment())
-        }
     }
 
     private fun replaceFragment(fragment: Fragment) {
-
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.frame_layout, fragment)
-        fragmentTransaction.commit()
-
+        supportFragmentManager.beginTransaction().replace(R.id.frame_layout, fragment).commit()
     }
 
 }
