@@ -1,10 +1,11 @@
 package com.example.newsapiclient.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.newsapiclient.R
 import com.example.newsapiclient.databinding.ActivityMainBinding
 import com.example.newsapiclient.presentation.adapter.NewsAdapter
@@ -27,8 +28,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var bottomNavigationView: BottomNavigationView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -37,29 +36,12 @@ class MainActivity : AppCompatActivity() {
         // Setting ViewModel
         viewModel = ViewModelProvider(this, factory)[NewsViewModel::class.java]
 
-        // Bottom Nav Config
-        bottomNavigationView = binding.bnvNews
-        bottomNavigationView.setOnItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.newsFragment -> {
-                    replaceFragment(NewsFragment())
-                    true
-                }
+        // Navigation Host Config
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.newsNavHostFragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        binding.bnvNews.setupWithNavController(navController)
 
-                R.id.savedFragment -> {
-                    replaceFragment(SavedFragment())
-                    true
-                }
-
-                else -> false
-            }
-        }
-        replaceFragment(NewsFragment())
-
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction().replace(R.id.frame_layout, fragment).commit()
     }
 
 }

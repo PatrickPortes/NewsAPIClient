@@ -1,5 +1,6 @@
 package com.example.newsapiclient.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -58,13 +59,13 @@ class NewsFragment : Fragment() {
 
             Toast.makeText(context,"Item Clicked Successful!!!", Toast.LENGTH_SHORT).show()
 
-//            val bundle = Bundle().apply {
-//                putSerializable("selected_article", it)
-//            }
-//            findNavController().navigate(
-//                R.id.action_newsFragment_to_infoFragment,
-//                bundle
-//            )
+            val bundle = Bundle().apply {
+                putSerializable("selected_article", it)
+            }
+            findNavController().navigate(
+                R.id.action_newsFragment_to_infoFragment,
+                bundle
+            )
         }
     }
 
