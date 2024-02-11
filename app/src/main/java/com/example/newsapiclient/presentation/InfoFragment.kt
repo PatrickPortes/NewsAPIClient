@@ -27,13 +27,13 @@ class InfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentInfoBinding.bind(view)
 
-        val args : InfoFragmentArgs by navArgs()
+        val args: InfoFragmentArgs by navArgs()
         val article = args.selectedArticle
 
         binding.wvNews.apply {
             webViewClient = WebViewClient()
-            if (article.url!=""){
-                loadUrl(article.url)
+            article.url?.let {
+                loadUrl(it)
             }
         }
 

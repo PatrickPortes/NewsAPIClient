@@ -57,15 +57,19 @@ class NewsFragment : Fragment() {
 
         newsAdapter.setOnItemClickListener {
 
-            Toast.makeText(context,"Item Clicked Successful!!!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Item Clicked Successful!!!", Toast.LENGTH_SHORT).show()
 
             val bundle = Bundle().apply {
                 putSerializable("selected_article", it)
             }
+
+            Log.i("MyTag","LINK: ${it.url}")
+
             findNavController().navigate(
                 R.id.action_newsFragment_to_infoFragment,
                 bundle
             )
+
         }
     }
 
@@ -80,7 +84,7 @@ class NewsFragment : Fragment() {
                     response.data?.let {
                         Log.i("MyTag", "came here ${it.articles.toList().size}")
                         newsAdapter.differ.submitList(it.articles.toList())
-                        if (it.totalResults%20 == 0) {
+                        if (it.totalResults % 20 == 0) {
                             pages = it.totalResults / 20
                         } else {
                             pages = it.totalResults / 20 + 1
@@ -124,11 +128,11 @@ class NewsFragment : Fragment() {
         binding.progressBarNews.visibility = View.INVISIBLE
     }
 
-    private val onScrollListener = object : RecyclerView.OnScrollListener(){
+    private val onScrollListener = object : RecyclerView.OnScrollListener() {
 
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             super.onScrollStateChanged(recyclerView, newState)
-            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
                 isScrolling = true
             }
         }
@@ -140,9 +144,9 @@ class NewsFragment : Fragment() {
             val visibleItems = layoutManager.childCount
             val topPosition = layoutManager.findFirstVisibleItemPosition()
 
-            val hasReachedToEnd = topPosition+visibleItems >= sizeOfTheCurrentList
-            val shouldPaginate =  !isLoading && !isLastPage && hasReachedToEnd && isScrolling
-            if (shouldPaginate){
+            val hasReachedToEnd = topPosition + visibleItems >= sizeOfTheCurrentList
+            val shouldPaginate = !isLoading && !isLastPage && hasReachedToEnd && isScrolling
+            if (shouldPaginate) {
                 page++
                 viewModel.getNewsHeadLines(country, page)
                 isScrolling = false
