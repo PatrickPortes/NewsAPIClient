@@ -3,11 +3,14 @@ package com.example.newsapiclient.presentation
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +22,9 @@ import com.example.newsapiclient.data.util.Resource.Success
 import com.example.newsapiclient.databinding.FragmentNewsBinding
 import com.example.newsapiclient.presentation.adapter.NewsAdapter
 import com.example.newsapiclient.presentation.viewmodel.NewsViewModel
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class NewsFragment : Fragment() {
 
@@ -54,6 +60,7 @@ class NewsFragment : Fragment() {
 
         initRecyclerView()
         viewNewsList()
+        setSearchView()
 
         newsAdapter.setOnItemClickListener {
 
@@ -63,7 +70,7 @@ class NewsFragment : Fragment() {
                 putSerializable("selected_article", it)
             }
 
-            Log.i("MyTag","LINK: ${it.url}")
+            Log.i("MyTag", "LINK: ${it.url}")
 
             findNavController().navigate(
                 R.id.action_newsFragment_to_infoFragment,
@@ -150,6 +157,76 @@ class NewsFragment : Fragment() {
                 page++
                 viewModel.getNewsHeadLines(country, page)
                 isScrolling = false
+            }
+        }
+
+    }
+
+    // Search
+
+    private fun setSearchView(){
+        binding.svNews.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    viewModel.searchNews("us", query.toString(), page)
+                    viewSearchedNews()
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    MainScope().launch {
+                        delay(2000)
+                        viewModel.searchNews("us", newText.toString(), page)
+                        viewSearchedNews()
+                    }
+                    return false
+                }
+
+            }
+        )
+
+        binding.svNews.setOnCloseListener(
+            object : SearchView.OnCloseListener{
+                override fun onClose(): Boolean {
+                    initRecyclerView()
+                    viewNewsList()
+                    return false
+                }
+
+            })
+    }
+
+    private fun viewSearchedNews(){
+
+        viewModel.searchedNews.observe(viewLifecycleOwner) { response ->
+            when (response) {
+
+                is Success -> {
+                    hideProgressBar()
+                    response.data?.let {
+                        Log.i("MyTag", "came here ${it.articles.toList().size}")
+                        newsAdapter.differ.submitList(it.articles.toList())
+                        if (it.totalResults % 20 == 0) {
+                            pages = it.totalResults / 20
+                        } else {
+                            pages = it.totalResults / 20 + 1
+                        }
+                        isLastPage = page == pages
+                    }
+                }
+
+                is Error -> {
+                    hideProgressBar()
+                    response.message?.let {
+                        Toast.makeText(activity, "An error occurred : $it", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                }
+
+                is Loading -> {
+                    showProgressBar()
+                }
+
             }
         }
 
